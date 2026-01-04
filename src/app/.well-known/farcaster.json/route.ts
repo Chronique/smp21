@@ -3,11 +3,9 @@ import { METADATA } from "../../../lib/utils";
 export async function GET() {
   const config = {
     accountAssociation: {
-      header:
-        "eyJmaWQiOjEyMTQyLCJ0eXBlIjoiY3VzdG9keSIsImtleSI6IjB4MDRlNkYxMTFlQmY2RkQyNTU3NmQ0ODA0ODA5NjI0MzVEYzNhYThEOCJ9",
-      payload: "eyJkb21haW4iOiJmcmFtZXMtdjItZGVtby1saWxhYy52ZXJjZWwuYXBwIn0",
-      signature:
-        "MHg5MGI1YzA0Zjc3MGY1M2I4M2I3OGQzOTMwNTNjMmJjZjUwNmE3ZThjNDViYmEwNDk2OTcwZTM1ZTQ0YzU2MGU1Nzc4Y2Y1ZTJkNDY2YzE1MWQxNGMzYmFjNzM3ZDcxZGEwZDVjYWJmMGMzZTdhYTc2YzRjMmQ5MmE5NDJhYjkyODFj",
+       "header": "eyJmaWQiOjM0NTk5MywidHlwZSI6ImF1dGgiLCJrZXkiOiIweDk2Q2MxN0M3N2E1MDREM0ZERDUxNmU2NjIxMzAzMDdFZjc0M2QzMEIifQ",
+       "payload": "eyJkb21haW4iOiJzbXAtMjEtamFtYmkudmVyY2VsLmFwcCJ9",
+       "signature": "igvm7+McN86HlZ/zB9kUxXu7rYjEt6yxRWBuob+8PvE3mwx3dftaqadFIK2vtj7b5391LGamft8soQn0iYiYUBw="
     },
       "frame": {
         "version": "1",
@@ -46,7 +44,7 @@ export async function GET() {
         "tags": ["base", "baseapp", "miniapp", "demo", "basepay"]
       },
       "baseBuilder": {
-        "allowedAddresses": ["0x8342A48694A74044116F330db5050a267b28dD85"],
+        "allowedAddresses": ["0x4fba95e4772be6d37a0c931D00570Fe2c9675524"],
       }
   };
 
