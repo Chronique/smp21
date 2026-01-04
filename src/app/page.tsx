@@ -1,3 +1,4 @@
+// src/app/page.tsx
 import { Metadata } from "next";
 import App from "./app";
 import { METADATA } from "~/lib/utils";
@@ -6,7 +7,7 @@ const frame = {
   version: "next",
   imageUrl: METADATA.bannerImageUrl,
   button: {
-    title: "Open",
+    title: "Mulai Memilih", // Judul tombol saat muncul di feed
     action: {
       type: "launch_frame",
       name: METADATA.name,

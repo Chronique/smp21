@@ -5,7 +5,7 @@ import { useState, useCallback } from "react";
 import { sdk } from "@farcaster/miniapp-sdk";
 import { SignInResult } from "@farcaster/miniapp-core/dist/actions/SignIn";
 import { createAppClient, generateNonce, viemConnector } from "@farcaster/auth-client";
-import { Button } from "~/components/ui/button";
+import { Button } from "~/components/ui/Button";
 
 export function SignInAction() {
   const [signingIn, setSigningIn] = useState<boolean>(false);

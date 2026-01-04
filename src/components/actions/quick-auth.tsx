@@ -2,7 +2,7 @@
 
 import { useState, useCallback } from "react";
 import { sdk } from "@farcaster/miniapp-sdk";
-import { Button } from "~/components/ui/button";
+import { Button } from "~/components/ui/Button";
 
 export function QuickAuthAction() {
   const [token, setToken] = useState<string | null>(null);

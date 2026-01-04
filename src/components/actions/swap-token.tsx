@@ -2,7 +2,7 @@
 
 import { useState, useCallback } from "react";
 import { sdk } from "@farcaster/miniapp-sdk";
-import { Button } from "~/components/ui/button";
+import { Button } from "~/components/ui/Button";
 
 export function SwapTokenAction() {
   const [error, setError] = useState<string | null>(null);

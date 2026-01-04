@@ -2,7 +2,7 @@
 
 import { useCallback, useState, useEffect } from "react";
 import { sdk } from "@farcaster/miniapp-sdk";
-import { Button } from "~/components/ui/button";
+import { Button } from "~/components/ui/Button";
 
 export function AddMiniAppAction() {
   const [loading, setLoading] = useState(false);

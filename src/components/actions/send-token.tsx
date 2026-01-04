@@ -2,7 +2,7 @@
 
 import { useState, useCallback } from "react";
 import { sdk } from "@farcaster/miniapp-sdk";
-import { Button } from "~/components/ui/button";
+import { Button } from "~/components/ui/Button";
 import { Label } from "~/components/ui/label";
 import { Input } from "~/components/ui/input";
 

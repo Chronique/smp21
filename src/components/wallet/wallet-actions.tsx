@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
-import { Button } from "~/components/ui/button";
+import { Button } from "~/components/ui/Button";
 import { useState, ChangeEvent, useEffect } from "react";
 import { useAccount, useConnect, useDisconnect, useSignMessage, useSwitchChain, useSendTransaction, useConfig } from "wagmi";
 import { parseEther, createWalletClient, custom, type Address } from "viem";
@@ -33,6 +33,8 @@ export function WalletConnect() {
       </div>
     );
   }
+
+  
 
   return (
     <div className="space-y-2">
