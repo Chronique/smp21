@@ -41,7 +41,7 @@ export async function GET() {
           "eip155:10"
         ],
         "noindex": false,
-        "tags": ["base", "baseapp", "miniapp", "demo", "basepay"]
+        "tags": ["base", "baseapp", "miniapp", "vote"]
       },
       "baseBuilder": {
         "allowedAddresses": ["0x4fba95e4772be6d37a0c931D00570Fe2c9675524"],
