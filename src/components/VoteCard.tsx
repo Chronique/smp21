@@ -44,28 +44,28 @@ export default function VoteCard() {
 
   return (
     <div className="space-y-4">
-      <h2 className="text-xl font-black text-center text-blue-600 mb-6">PILIH KETUA KELAS</h2>
+      <h2 className="text-xl font-black text-center text-blue-600 mb-6 uppercase tracking-tighter">Pilih Ketua Kelas</h2>
       {(candidates as any[]).map((c, i) => (
-        <div key={i} className="bg-white dark:bg-zinc-900 p-4 rounded-3xl border flex items-center gap-4 shadow-sm">
+        <div key={i} className="bg-white dark:bg-zinc-900 p-4 rounded-[28px] border flex items-center gap-4 shadow-sm">
           <img 
             src={c.photoUrl || "https://via.placeholder.com/150"} 
             alt={c.name} 
             className="w-20 h-20 rounded-2xl object-cover border-2 border-blue-50 shadow-inner"
           />
           <div className="flex-1">
-            <h3 className="font-black text-gray-800 dark:text-white">{c.name}</h3>
-            <p className="text-[10px] font-bold text-blue-500 uppercase tracking-tighter">{Number(c.votes)} Suara</p>
+            <h3 className="font-black text-gray-800 dark:text-white text-lg">{c.name}</h3>
+            {/* BARIS SUARA DIHAPUS DARI SINI */}
           </div>
           <button 
             onClick={() => handleVote(i)}
             disabled={isPending}
-            className="px-5 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-2xl font-black text-xs transition-all active:scale-95 disabled:opacity-50 shadow-lg shadow-blue-200"
+            className="px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-2xl font-black text-xs transition-all active:scale-95 disabled:opacity-50"
           >
             {isPending ? "..." : "PILIH"}
           </button>
         </div>
       ))}
-      <p className="text-center text-[9px] text-gray-400 font-bold uppercase py-4">Biaya Gas ditanggung Sekolah (Base Paymaster)</p>
+      <p className="text-center text-[9px] text-gray-400 font-bold uppercase py-4">Sistem Voting On-chain Berbasis Base</p>
     </div>
   );
 }
