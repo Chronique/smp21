@@ -14,7 +14,7 @@ export const config = createConfig({
     farcasterMiniApp(), 
     coinbaseWallet({
       appName: METADATA.name,
-      preference: "all", // "all" memungkinkan popup Smart Wallet (account.base.app) muncul di browser
+      preference: "smartWalletOnly", // "all" memungkinkan popup Smart Wallet (account.base.app) muncul di browser
     }),
     injected({ target: "metaMask" })
   ],

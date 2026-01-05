@@ -40,6 +40,18 @@ export function WalletConnect() {
     }
   };
 
+  // Tombol untuk Smart Wallet (Tanpa Ekstensi)
+const handleConnectSmartWallet = () => {
+  const connector = connectors.find((c) => c.id === "coinbaseWalletSDK"); // ID default untuk coinbaseWallet
+  if (connector) connect({ connector });
+};
+
+// Tombol untuk MetaMask (Pake Ekstensi)
+const handleConnectMetaMask = () => {
+  const connector = connectors.find((c) => c.id === "metaMask");
+  if (connector) connect({ connector });
+};
+
   return (
     <div className="w-full space-y-3">
       {/* Tombol Coinbase Smart Wallet (Akan mengarah ke account.base.app di browser) */}
