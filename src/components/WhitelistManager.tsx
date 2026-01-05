@@ -91,7 +91,7 @@ export default function WhitelistManager() {
           className="w-full h-40 p-4 rounded-2xl border bg-zinc-50 dark:bg-zinc-800 mb-4 text-xs font-mono outline-none focus:border-blue-500"
         />
         <Button onClick={handleAdd} disabled={isPending} className="w-full py-6 rounded-2xl">
-          {isPending ? "MEMPROSES..." : "SIMPAN WHITELIST (GRATIS)"}
+          {isPending ? "MEMPROSES..." : "SIMPAN WHITELIST"}
         </Button>
       </div>
 
