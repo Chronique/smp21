@@ -7,7 +7,7 @@ const frame = {
   version: "next",
   imageUrl: METADATA.bannerImageUrl,
   button: {
-    title: "Mulai Memilih", // Judul tombol saat muncul di feed
+    title: "Mulai Memilih", 
     action: {
       type: "launch_frame",
       name: METADATA.name,
@@ -33,6 +33,8 @@ export async function generateMetadata(): Promise<Metadata> {
     other: {
       "fc:frame": JSON.stringify(frame),
       "fc:miniapp": JSON.stringify(frame),
+      // MASUKKAN KODE BASE DEV DI SINI
+      "base:app_id": "695b6e784d3a403912ed8de8",
     }
   };
 }

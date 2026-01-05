@@ -2,26 +2,27 @@
 
 import { createConfig, http, WagmiProvider } from "wagmi";
 import { base } from "wagmi/chains";
-import { coinbaseWallet, injected } from "wagmi/connectors"; 
+import { baseAccount, injected } from "wagmi/connectors"; // Pastikan baseAccount diimpor
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { farcasterMiniApp } from "@farcaster/miniapp-wagmi-connector";
 import { METADATA } from "../../lib/utils";
 
 export const config = createConfig({
   chains: [base],
+  ssr: true, // Dukungan untuk Next.js SSR
+  multiInjectedProviderDiscovery: false, // Fokus pada Base Account
   transports: { [base.id]: http() },
   connectors: [
     farcasterMiniApp(), 
-    coinbaseWallet({
+    baseAccount({
       appName: METADATA.name,
-      preference: "smartWalletOnly", // "all" memungkinkan popup Smart Wallet (account.base.app) muncul di browser
+      appLogoUrl: METADATA.iconImageUrl,
     }),
     injected({ target: "metaMask" })
   ],
 });
 
 const queryClient = new QueryClient();
-
 export default function Provider({ children }: { children: React.ReactNode }) {
   return (
     <WagmiProvider config={config}>
