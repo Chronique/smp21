@@ -1,23 +1,25 @@
 "use client";
 
 import { createConfig, http, WagmiProvider } from "wagmi";
-import { base, optimism } from "wagmi/chains";
-import { baseAccount } from "wagmi/connectors";
+import { base } from "wagmi/chains";
+import { coinbaseWallet } from "wagmi/connectors"; // Gunakan coinbaseWallet
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { farcasterMiniApp } from "@farcaster/miniapp-wagmi-connector";
 import { METADATA } from "../../lib/utils";
 
 export const config = createConfig({
-  chains: [base, optimism],
+  chains: [base],
   transports: {
     [base.id]: http(),
-    [optimism.id]: http(),
   },
   connectors: [
+    // 1. Prioritas Farcaster (Auto-detect di Warpcast)
     farcasterMiniApp(), 
-    baseAccount({
+    // 2. Coinbase Smart Wallet (Permissionless/Auto-connect)
+    coinbaseWallet({
       appName: METADATA.name,
       appLogoUrl: METADATA.iconImageUrl,
+      preference: "smartWalletOnly", // Memaksa penggunaan Smart Wallet
     })
   ],
 });
