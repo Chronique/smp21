@@ -10,6 +10,12 @@ export default function VoteCard() {
     abi: CLASS_VOTE_ABI, address: CONTRACT_ADDRESS, functionName: "getCandidates",
   });
 
+const { data: pollTitle } = useReadContract({
+  abi: CLASS_VOTE_ABI,
+  address: CONTRACT_ADDRESS,
+  functionName: "pollTitle",
+});
+
   const handleVote = async (index: number) => {
     const name = (candidates as any[])?.[index]?.name || "kandidat ini";
     if (!confirm(`Apakah Anda yakin memilih ${name}?`)) return;
@@ -38,7 +44,9 @@ export default function VoteCard() {
 
   return (
     <div className="space-y-4">
-      <h2 className="text-xl font-black text-center text-blue-600 mb-6 uppercase">Pilih Ketua Kelas</h2>
+      <h2 className="text-xl font-black text-center text-blue-600 mb-6 uppercase tracking-tight">
+  {pollTitle as string || "MEMUAT JUDUL..."}
+</h2>
       {(candidates as any[]).map((c, i) => (
         <div key={i} className="bg-white p-4 rounded-[28px] border flex items-center gap-4 shadow-sm">
           <img src={c.photoUrl || "https://via.placeholder.com/150"} className="w-20 h-20 rounded-2xl object-cover border" alt={c.name} />

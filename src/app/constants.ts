@@ -1,5 +1,5 @@
 // src/app/constants.ts
-export const CONTRACT_ADDRESS = "0xBB9D42b6186f52Ea5167051f7D66B3D6C04932A8";
+export const CONTRACT_ADDRESS = "0x91B76ee72F7739a429ab59Db2D43C104dA16E5b6";
 export const BUILDER_CODE_HEX = "62635f7667687139383365"; // Hex dari "bc_vghq983e"
 
 export const CLASS_VOTE_ABI = 
@@ -8,17 +8,17 @@ export const CLASS_VOTE_ABI =
     "type": "constructor",
     "inputs": [
       {
-        "name": "_paymasterAdmin",
+        "name": "_admin1",
         "type": "address",
         "internalType": "address"
       },
       {
-        "name": "_guru",
+        "name": "_admin2",
         "type": "address",
         "internalType": "address"
       },
       {
-        "name": "_kepsek",
+        "name": "_admin3",
         "type": "address",
         "internalType": "address"
       }
@@ -26,11 +26,55 @@ export const CLASS_VOTE_ABI =
     "stateMutability": "nonpayable"
   },
   {
+    "name": "PollCreated",
+    "type": "event",
+    "inputs": [
+      {
+        "name": "id",
+        "type": "uint256",
+        "indexed": true,
+        "internalType": "uint256"
+      },
+      {
+        "name": "title",
+        "type": "string",
+        "indexed": false,
+        "internalType": "string"
+      }
+    ],
+    "anonymous": false
+  },
+  {
+    "name": "Voted",
+    "type": "event",
+    "inputs": [
+      {
+        "name": "id",
+        "type": "uint256",
+        "indexed": true,
+        "internalType": "uint256"
+      },
+      {
+        "name": "voter",
+        "type": "address",
+        "indexed": false,
+        "internalType": "address"
+      },
+      {
+        "name": "candidateIndex",
+        "type": "uint256",
+        "indexed": false,
+        "internalType": "uint256"
+      }
+    ],
+    "anonymous": false
+  },
+  {
     "name": "addAdmin",
     "type": "function",
     "inputs": [
       {
-        "name": "_newAdmin",
+        "name": "_admin",
         "type": "address",
         "internalType": "address"
       }
@@ -43,7 +87,7 @@ export const CLASS_VOTE_ABI =
     "type": "function",
     "inputs": [
       {
-        "name": "students",
+        "name": "_voters",
         "type": "address[]",
         "internalType": "address[]"
       }
@@ -73,7 +117,7 @@ export const CLASS_VOTE_ABI =
         "internalType": "string"
       },
       {
-        "name": "votes",
+        "name": "voteCount",
         "type": "uint256",
         "internalType": "uint256"
       }
@@ -85,12 +129,12 @@ export const CLASS_VOTE_ABI =
     "type": "function",
     "inputs": [
       {
-        "name": "names",
+        "name": "_names",
         "type": "string[]",
         "internalType": "string[]"
       },
       {
-        "name": "photos",
+        "name": "_photos",
         "type": "string[]",
         "internalType": "string[]"
       }
@@ -118,20 +162,25 @@ export const CLASS_VOTE_ABI =
             "internalType": "string"
           },
           {
-            "name": "votes",
+            "name": "voteCount",
             "type": "uint256",
             "internalType": "uint256"
           }
         ],
-        "internalType": "struct ClassVoteSMP21.Candidate[]"
+        "internalType": "struct SMP21Voting.Candidate[]"
       }
     ],
     "stateMutability": "view"
   },
   {
-    "name": "hasVoted",
+    "name": "hasVotedInPoll",
     "type": "function",
     "inputs": [
+      {
+        "name": "",
+        "type": "uint256",
+        "internalType": "uint256"
+      },
       {
         "name": "",
         "type": "address",
@@ -167,20 +216,14 @@ export const CLASS_VOTE_ABI =
     "stateMutability": "view"
   },
   {
-    "name": "isWhitelisted",
+    "name": "owner",
     "type": "function",
-    "inputs": [
+    "inputs": [],
+    "outputs": [
       {
         "name": "",
         "type": "address",
         "internalType": "address"
-      }
-    ],
-    "outputs": [
-      {
-        "name": "",
-        "type": "bool",
-        "internalType": "bool"
       }
     ],
     "stateMutability": "view"
@@ -199,13 +242,52 @@ export const CLASS_VOTE_ABI =
     "stateMutability": "view"
   },
   {
+    "name": "pollId",
+    "type": "function",
+    "inputs": [],
+    "outputs": [
+      {
+        "name": "",
+        "type": "uint256",
+        "internalType": "uint256"
+      }
+    ],
+    "stateMutability": "view"
+  },
+  {
+    "name": "pollTitle",
+    "type": "function",
+    "inputs": [],
+    "outputs": [
+      {
+        "name": "",
+        "type": "string",
+        "internalType": "string"
+      }
+    ],
+    "stateMutability": "view"
+  },
+  {
     "name": "resetPoll",
     "type": "function",
     "inputs": [
       {
-        "name": "clearWhitelist",
+        "name": "_clearWhitelist",
         "type": "bool",
         "internalType": "bool"
+      }
+    ],
+    "outputs": [],
+    "stateMutability": "nonpayable"
+  },
+  {
+    "name": "updateTitle",
+    "type": "function",
+    "inputs": [
+      {
+        "name": "_newTitle",
+        "type": "string",
+        "internalType": "string"
       }
     ],
     "outputs": [],
@@ -216,12 +298,31 @@ export const CLASS_VOTE_ABI =
     "type": "function",
     "inputs": [
       {
-        "name": "index",
+        "name": "_candidateIndex",
         "type": "uint256",
         "internalType": "uint256"
       }
     ],
     "outputs": [],
     "stateMutability": "nonpayable"
+  },
+  {
+    "name": "whitelist",
+    "type": "function",
+    "inputs": [
+      {
+        "name": "",
+        "type": "address",
+        "internalType": "address"
+      }
+    ],
+    "outputs": [
+      {
+        "name": "",
+        "type": "bool",
+        "internalType": "bool"
+      }
+    ],
+    "stateMutability": "view"
   }
 ] as const;
