@@ -2,25 +2,31 @@
 
 import { useState } from "react";
 import { useSendCalls } from "wagmi";
-import { encodeFunctionData } from "viem";
+import { encodeFunctionData, isAddress } from "viem";
 import { CONTRACT_ADDRESS, CLASS_VOTE_ABI } from "~/app/constants";
 import { Button } from "./ui/Button";
 
-export default function WhitelistManager() {
+/** * FIX: Menambahkan Interface untuk Props
+ * Ini akan menghilangkan error "Property 'onUpdate' does not exist" di Demo.tsx
+ */
+interface WhitelistManagerProps {
+  onUpdate?: (newList: string[]) => void;
+}
+
+export default function WhitelistManager({ onUpdate }: WhitelistManagerProps) {
   const [input, setInput] = useState("");
   const { sendCalls, isPending } = useSendCalls();
 
   // 1. Fungsi Tambah Whitelist (Gasless)
   const handleAdd = async () => {
-    // FIX: Ambil URL dan pastikan tidak undefined
     const paymasterUrl = process.env.NEXT_PUBLIC_PAYMASTER_URL;
     if (!paymasterUrl) return alert("Paymaster URL belum diatur di .env");
 
-    // FIX: Casting ke `0x${string}`[] agar TypeScript tidak komplain
+    // Parsing alamat dan validasi
     const addresses = input
       .split(/[\n,]+/)
       .map((a) => a.trim())
-      .filter((a) => a.startsWith("0x")) as `0x${string}`[];
+      .filter((a) => isAddress(a)) as `0x${string}`[];
 
     if (addresses.length === 0) return alert("Alamat tidak valid!");
 
@@ -40,9 +46,17 @@ export default function WhitelistManager() {
           paymasterService: { url: paymasterUrl },
         },
       });
+
       alert("Permintaan pendaftaran dikirim secara gratis!");
+      
+      // Jika parent (Demo.tsx) membutuhkan data terbaru, panggil fungsi ini
+      if (onUpdate) {
+        onUpdate(addresses);
+      }
+      
       setInput("");
     } catch (e) {
+      console.error(e);
       alert("Terjadi kesalahan teknis.");
     }
   };
@@ -76,6 +90,7 @@ export default function WhitelistManager() {
       });
       alert("Permintaan reset dikirim secara gratis!");
     } catch (e) {
+      console.error(e);
       alert("Gagal melakukan reset.");
     }
   };
