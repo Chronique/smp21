@@ -12,6 +12,7 @@ import CreatePoll from "./CreatePoll";
 import WhitelistManager from "./WhitelistManager";
 import AdminSettings from "./AdminSettings";
 import VoteResults from "./VoteResults";
+import Verification from "./Verification";
 
 export default function Demo() {
   const { address, isConnected } = useAccount();
@@ -59,6 +60,11 @@ export default function Demo() {
             {activeTab === "results" && isAdmin && <VoteResults />}
 
             {activeTab === "settings" && isAdmin && <AdminSettings />}
+
+            {/* TAB VERIFIKASI BARU: Kirim data whitelist pusat ke sini */}
+            {activeTab === "verify" && isAdmin && (
+              <Verification />
+            )}
 
             {activeTab === "wallet" && (
               <div className="p-6 bg-white dark:bg-zinc-900 rounded-2xl border">

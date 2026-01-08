@@ -25,6 +25,22 @@ export const CLASS_VOTE_ABI =
     ],
     "stateMutability": "nonpayable"
   },
+
+  {
+    "name": "getFullWhitelist",
+    "type": "function",
+    "inputs": [],
+    "outputs": [{ "name": "", "type": "address[]", "internalType": "address[]" }],
+    "stateMutability": "view"
+  },
+  {
+    "name": "getFullAdmins",
+    "type": "function",
+    "inputs": [],
+    "outputs": [{ "name": "", "type": "address[]", "internalType": "address[]" }],
+    "stateMutability": "view"
+  },
+
   {
     "name": "PollCreated",
     "type": "event",
