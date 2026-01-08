@@ -7,6 +7,7 @@ import {
   AccountCircle, Settings, Assessment 
 } from "@mui/icons-material";
 import { HapticWrapper } from "~/components/haptic-wrapper";
+import { PlaylistAddCheck } from "@mui/icons-material";
 
 export function BottomNavigation({ activeTab, onTabChange, isAdmin, pollCreated }: any) {
   return (
@@ -29,6 +30,12 @@ export function BottomNavigation({ activeTab, onTabChange, isAdmin, pollCreated 
             </HapticWrapper>
           )}
 
+          {isAdmin && (
+            <HapticWrapper onClick={() => onTabChange("verify")} hapticType="selection">
+              <TabItem value="verify" icon={<PlaylistAddCheck className="text-teal-500" />} label="Cek" />
+            </HapticWrapper>
+          )}  
+          
           {isAdmin && (
             <>
               <HapticWrapper onClick={() => onTabChange("admin")} hapticType="selection">
