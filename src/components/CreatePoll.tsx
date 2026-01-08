@@ -1,13 +1,14 @@
+// src/components/CreatePoll.tsx
 "use client";
 
 import { useState } from "react";
 import { useSendCalls } from "wagmi";
 import { encodeFunctionData } from "viem";
-import { CONTRACT_ADDRESS, CLASS_VOTE_ABI } from "~/app/constants"; // Hapus BUILDER_CODE_HEX
-import { Add, DeleteOutline, AddPhotoAlternate } from "@mui/icons-material";
-import { Button } from "./ui/Button";
+import { CONTRACT_ADDRESS, CLASS_VOTE_ABI, BUILDER_CODE_HEX } from "~/app/constants";
+import { Add, DeleteOutline, AddPhotoAlternate } from "@mui/icons-material"; // Ikon M3
 
 export default function CreatePoll({ onSuccess }: { onSuccess?: () => void }) {
+  // State sekarang menyimpan objek dengan name dan photo
   const [candidateList, setCandidateList] = useState([
     { name: "", photo: "" }, 
     { name: "", photo: "" }
@@ -18,29 +19,24 @@ export default function CreatePoll({ onSuccess }: { onSuccess?: () => void }) {
     const paymasterUrl = process.env.NEXT_PUBLIC_PAYMASTER_URL;
     if (!paymasterUrl) return alert("Paymaster URL tidak ditemukan!");
 
-    // 1. Filter kandidat yang namanya tidak kosong agar sinkron
-    const validCandidates = candidateList.filter(c => c.name.trim() !== "");
+    // Ambil data dari state
+    const names = candidateList.map(c => c.name).filter(n => n !== "");
+    const photos = candidateList.map(c => c.photo || "https://via.placeholder.com/150"); // Default jika kosong
     
-    if (validCandidates.length < 2) return alert("Minimal 2 nama kandidat harus diisi!");
-    if (validCandidates.length > 5) return alert("Maksimal 5 kandidat diperbolehkan!");
-
-    const names = validCandidates.map(c => c.name);
-    const photos = validCandidates.map(c => c.photo || "https://via.placeholder.com/150");
+    if (names.length < 2) return alert("Minimal 2 nama kandidat harus diisi!");
 
     try {
       sendCalls({
         calls: [{
           to: CONTRACT_ADDRESS as `0x${string}`,
-          // 2. FIX: Gunakan data murni tanpa BUILDER_CODE_HEX
-          data: encodeFunctionData({
+          data: `${encodeFunctionData({
             abi: CLASS_VOTE_ABI,
             functionName: "createPoll",
             args: [names, photos],
-          }),
+          })}${BUILDER_CODE_HEX}` as `0x${string}`, // Builder Code
         }],
         capabilities: { paymasterService: { url: paymasterUrl } }
       });
-      
       alert("Pemilihan sedang diproses secara Gasless!");
       if (onSuccess) onSuccess();
     } catch (e) { 
@@ -48,14 +44,13 @@ export default function CreatePoll({ onSuccess }: { onSuccess?: () => void }) {
     }
   };
 
-  // ... (Bagian return JSX tetap sama, hanya sesuaikan styling sedikit) ...
   return (
-    <div className="space-y-6 bg-white dark:bg-zinc-900 p-6 rounded-[28px] border shadow-sm">
-      <h2 className="text-lg font-black text-zinc-900 dark:text-white uppercase tracking-tight">Setup Kandidat</h2>
+    <div className="space-y-6 bg-white p-6 rounded-[28px] border shadow-sm">
+      <h2 className="text-lg font-black text-gray-900 uppercase tracking-tight">Setup Kandidat</h2>
       
       <div className="space-y-4">
         {candidateList.map((c, i) => (
-          <div key={i} className="p-5 bg-zinc-50 dark:bg-zinc-800/50 rounded-[24px] border border-zinc-100 dark:border-zinc-800 flex flex-col gap-3">
+          <div key={i} className="p-5 bg-zinc-50 rounded-[24px] border border-zinc-100 flex flex-col gap-3">
             <div className="flex justify-between items-center">
               <span className="text-[10px] font-black text-blue-500 uppercase tracking-widest">Kandidat {i + 1}</span>
               {candidateList.length > 2 && (
@@ -65,15 +60,17 @@ export default function CreatePoll({ onSuccess }: { onSuccess?: () => void }) {
               )}
             </div>
 
+            {/* Input Nama */}
             <input 
               placeholder="Nama Lengkap" 
-              className="w-full bg-transparent border-b border-zinc-200 dark:border-zinc-700 py-2 text-sm outline-none focus:border-blue-500 text-zinc-900 dark:text-white transition-colors"
+              className="w-full bg-transparent border-b border-zinc-200 py-2 text-sm outline-none focus:border-blue-500 transition-colors"
               value={c.name} 
               onChange={(e) => {
                 const newList = [...candidateList]; newList[i].name = e.target.value; setCandidateList(newList);
               }}
             />
 
+            {/* Input Foto (Baru ditambahkan) */}
             <div className="flex items-center gap-2">
               <AddPhotoAlternate className="text-zinc-400" fontSize="small" />
               <input 
@@ -92,20 +89,20 @@ export default function CreatePoll({ onSuccess }: { onSuccess?: () => void }) {
       {candidateList.length < 5 && (
         <button 
           onClick={() => setCandidateList([...candidateList, { name: "", photo: "" }])} 
-          className="w-full py-3 border-2 border-dashed border-zinc-200 dark:border-zinc-800 rounded-2xl flex items-center justify-center gap-2 text-zinc-400 hover:text-blue-500 transition-colors"
+          className="w-full py-3 border-2 border-dashed border-zinc-200 rounded-2xl flex items-center justify-center gap-2 text-zinc-400 hover:text-blue-500 transition-colors"
         >
           <Add fontSize="small" /> <span className="text-xs font-bold">Tambah Kandidat</span>
         </button>
       )}
 
-      <Button 
+      <button 
         onClick={handleCreate} 
         disabled={isPending} 
-        className="w-full py-6 rounded-2xl shadow-xl"
+        className="w-full py-4 bg-zinc-900 text-white font-black rounded-2xl shadow-xl active:scale-95 transition-all disabled:opacity-50"
       >
         {isPending ? "MEMPROSES..." : "MULAI PEMILIHAN (GRATIS)"}
-      </Button>
-      <p className="text-center text-[9px] text-zinc-400 font-bold uppercase py-2 tracking-widest">Biaya Gas Gratis</p>
+      </button>
+      <p className="text-center text-[9px] text-gray-400 font-bold uppercase py-2">Biaya Gas Gratis</p>
     </div>
   );
 }

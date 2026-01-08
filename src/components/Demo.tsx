@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react"; // Tambahkan useEffect
+import React, { useState } from "react";
 import { useAccount, useReadContract } from "wagmi";
 import { CONTRACT_ADDRESS, CLASS_VOTE_ABI } from "~/app/constants";
 import { TopBar } from "~/components/top-bar";
@@ -12,28 +12,10 @@ import CreatePoll from "./CreatePoll";
 import WhitelistManager from "./WhitelistManager";
 import AdminSettings from "./AdminSettings";
 import VoteResults from "./VoteResults";
-import { Verification } from "./Verification"; // Import tab Verifikasi baru
 
 export default function Demo() {
   const { address, isConnected } = useAccount();
   const [activeTab, setActiveTab] = useState<string>("vote");
-  
-  // --- STATE WHITELIST PUSAT ---
-  const [whitelist, setWhitelist] = useState<string[]>([]);
-
-  // Load data dari LocalStorage saat pertama kali buka aplikasi
-  useEffect(() => {
-    const saved = localStorage.getItem("smp21_whitelist");
-    if (saved) {
-      setWhitelist(JSON.parse(saved));
-    }
-  }, []);
-
-  // Fungsi untuk update whitelist dari tab Admin ke State Pusat
-  const handleWhitelistUpdate = (newList: string[]) => {
-    setWhitelist(newList);
-    localStorage.setItem("smp21_whitelist", JSON.stringify(newList));
-  };
 
   const { data: pollCreated, refetch: refetchStatus } = useReadContract({
     abi: CLASS_VOTE_ABI,
@@ -41,12 +23,16 @@ export default function Demo() {
     functionName: "pollCreated",
   });
 
+  // PERBAIKAN: Gunakan isAdmin (mapping) bukan admin (variable)
+  // Masukkan address sebagai args
   const { data: userIsAdmin } = useReadContract({
     abi: CLASS_VOTE_ABI,
     address: CONTRACT_ADDRESS,
     functionName: "isAdmin",
     args: address ? [address] : undefined,
-    query: { enabled: !!address }
+    query: {
+      enabled: !!address,
+    }
   });
 
   const isAdmin = !!userIsAdmin;
@@ -68,15 +54,7 @@ export default function Demo() {
             
             {activeTab === "create" && isAdmin && <CreatePoll onSuccess={refetchStatus} />}
             
-            {/* Kirim fungsi update ke WhitelistManager */}
-            {activeTab === "admin" && isAdmin && (
-              <WhitelistManager onUpdate={handleWhitelistUpdate} />
-            )}
-
-            {/* TAB VERIFIKASI BARU: Kirim data whitelist pusat ke sini */}
-            {activeTab === "verify" && isAdmin && (
-              <Verification  />
-            )}
+            {activeTab === "admin" && isAdmin && <WhitelistManager />}
 
             {activeTab === "results" && isAdmin && <VoteResults />}
 

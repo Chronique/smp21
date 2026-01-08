@@ -1,34 +1,26 @@
 "use client";
 
 import { useState } from "react";
-import { useSendCalls, useReadContract } from "wagmi";
-import { encodeFunctionData, isAddress } from "viem";
+import { useSendCalls } from "wagmi";
+import { encodeFunctionData } from "viem";
 import { CONTRACT_ADDRESS, CLASS_VOTE_ABI } from "~/app/constants";
 import { Button } from "./ui/Button";
 
-interface WhitelistManagerProps {
-  onUpdate?: (newList: string[]) => void;
-}
-
-export default function WhitelistManager({ onUpdate }: WhitelistManagerProps) {
+export default function WhitelistManager() {
   const [input, setInput] = useState("");
   const { sendCalls, isPending } = useSendCalls();
 
-  // Ambil data murid langsung dari Blockchain
-  const { data: whitelistData, refetch } = useReadContract({
-    address: CONTRACT_ADDRESS as `0x${string}`,
-    abi: CLASS_VOTE_ABI,
-    functionName: "getFullWhitelist",
-  });
-
+  // 1. Fungsi Tambah Whitelist (Gasless)
   const handleAdd = async () => {
+    // FIX: Ambil URL dan pastikan tidak undefined
     const paymasterUrl = process.env.NEXT_PUBLIC_PAYMASTER_URL;
-    if (!paymasterUrl) return alert("Paymaster URL belum diatur");
+    if (!paymasterUrl) return alert("Paymaster URL belum diatur di .env");
 
+    // FIX: Casting ke `0x${string}`[] agar TypeScript tidak komplain
     const addresses = input
       .split(/[\n,]+/)
       .map((a) => a.trim())
-      .filter((a) => isAddress(a)) as `0x${string}`[];
+      .filter((a) => a.startsWith("0x")) as `0x${string}`[];
 
     if (addresses.length === 0) return alert("Alamat tidak valid!");
 
@@ -44,54 +36,82 @@ export default function WhitelistManager({ onUpdate }: WhitelistManagerProps) {
             }),
           },
         ],
-        capabilities: { paymasterService: { url: paymasterUrl } },
+        capabilities: {
+          paymasterService: { url: paymasterUrl },
+        },
       });
-      alert("Permintaan pendaftaran dikirim!");
+      alert("Permintaan pendaftaran dikirim secara gratis!");
       setInput("");
-      setTimeout(() => refetch(), 3000);
     } catch (e) {
       alert("Terjadi kesalahan teknis.");
     }
   };
 
+  // 2. Fungsi Reset (Gasless)
+  const handleReset = async (hapusSemuaMurid: boolean) => {
+    const paymasterUrl = process.env.NEXT_PUBLIC_PAYMASTER_URL;
+    if (!paymasterUrl) return alert("Paymaster URL belum diatur di .env");
+
+    const confirmMsg = hapusSemuaMurid 
+      ? "Hapus SEMUA data termasuk daftar murid?" 
+      : "Hapus pemilihan saja (Simpan daftar murid)?";
+
+    if (!confirm(confirmMsg)) return;
+
+    try {
+      sendCalls({
+        calls: [
+          {
+            to: CONTRACT_ADDRESS as `0x${string}`,
+            data: encodeFunctionData({
+              abi: CLASS_VOTE_ABI,
+              functionName: "resetPoll",
+              args: [hapusSemuaMurid],
+            }),
+          },
+        ],
+        capabilities: {
+          paymasterService: { url: paymasterUrl },
+        },
+      });
+      alert("Permintaan reset dikirim secara gratis!");
+    } catch (e) {
+      alert("Gagal melakukan reset.");
+    }
+  };
+
   return (
     <div className="space-y-6">
-      {/* SEKSI 1: DAFTARKAN MURID */}
       <div className="bg-white dark:bg-zinc-900 p-6 rounded-3xl border shadow-sm">
-        <h2 className="text-xl font-black mb-4 uppercase tracking-tight text-zinc-900 dark:text-white">
-          Daftarkan Murid
-        </h2>
+        <h2 className="text-xl font-black mb-4 uppercase tracking-tight">Daftarkan Murid</h2>
         <textarea
           value={input}
           onChange={(e) => setInput(e.target.value)}
           placeholder="Masukkan alamat wallet (satu per baris atau pisahkan dengan koma)"
-          className="w-full h-32 p-4 rounded-2xl border bg-zinc-50 dark:bg-zinc-800 mb-4 text-xs font-mono outline-none focus:border-blue-500"
+          className="w-full h-40 p-4 rounded-2xl border bg-zinc-50 dark:bg-zinc-800 mb-4 text-xs font-mono outline-none focus:border-blue-500"
         />
-        <Button onClick={handleAdd} disabled={isPending} className="w-full py-6 rounded-2xl bg-blue-600 text-white font-bold">
+        <Button onClick={handleAdd} disabled={isPending} className="w-full py-6 rounded-2xl">
           {isPending ? "MEMPROSES..." : "SIMPAN WHITELIST"}
         </Button>
       </div>
 
-      {/* SEKSI 2: DAFTAR MURID TERDAFTAR */}
-      <div className="bg-white dark:bg-zinc-900 p-6 rounded-3xl border shadow-sm">
-        <div className="flex justify-between items-center mb-4">
-          <h2 className="text-sm font-black uppercase text-zinc-900 dark:text-white">
-            Murid Terdaftar ({whitelistData?.length || 0})
-          </h2>
-          <button onClick={() => refetch()} className="text-[10px] text-blue-500 font-bold hover:underline">
-            REFRESH
+      <div className="p-6 bg-red-50 dark:bg-red-900/10 rounded-3xl border border-red-100">
+        <h3 className="text-xs font-black text-red-500 mb-4 uppercase tracking-widest">Kontrol Pemilihan</h3>
+        <div className="flex flex-col gap-2">
+          <button
+            onClick={() => handleReset(false)}
+            disabled={isPending}
+            className="w-full py-3 border border-red-200 text-red-600 rounded-xl text-[10px] font-bold hover:bg-white transition-all"
+          >
+            DAUR ULANG (SIMPAN DAFTAR MURID)
           </button>
-        </div>
-        <div className="max-h-60 overflow-y-auto space-y-2 pr-2 custom-scrollbar">
-          {whitelistData && (whitelistData as string[]).length > 0 ? (
-            (whitelistData as string[]).map((addr, i) => (
-              <div key={i} className="p-3 bg-zinc-50 dark:bg-zinc-800 rounded-xl text-[10px] font-mono truncate border border-zinc-100 dark:border-zinc-700">
-                {addr}
-              </div>
-            ))
-          ) : (
-            <p className="text-zinc-400 text-xs italic text-center py-4">Belum ada murid terdaftar.</p>
-          )}
+          <button
+            onClick={() => handleReset(true)}
+            disabled={isPending}
+            className="w-full py-3 bg-red-600 text-white rounded-xl text-[10px] font-bold shadow-lg shadow-red-200"
+          >
+            RESET TOTAL (HAPUS SEMUA DATA)
+          </button>
         </div>
       </div>
     </div>
