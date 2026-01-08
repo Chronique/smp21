@@ -1,5 +1,7 @@
 "use client";
 
+// FIX: Tambahkan useEffect ke dalam import
+import { useEffect } from "react"; 
 import { useReadContract } from "wagmi";
 import { CONTRACT_ADDRESS, CLASS_VOTE_ABI } from "~/app/constants";
 import { CheckCircle, RadioButtonUnchecked, PlaylistAddCheck } from "@mui/icons-material";
@@ -10,9 +12,9 @@ import { CheckCircle, RadioButtonUnchecked, PlaylistAddCheck } from "@mui/icons-
 function VoterStatus({ address, pollId }: { address: string; pollId: bigint }) {
   const { data: hasVoted } = useReadContract({
     abi: CLASS_VOTE_ABI,
-    address: CONTRACT_ADDRESS,
+    // FIX: Pastikan casting ke 0x${string}
+    address: CONTRACT_ADDRESS as `0x${string}`, 
     functionName: "hasVotedInPoll",
-    // Argumen harus urut: [ID Pemilihan (bigint), Alamat Murid (address)]
     args: [pollId, address as `0x${string}`], 
   });
 
@@ -21,7 +23,6 @@ function VoterStatus({ address, pollId }: { address: string; pollId: bigint }) {
       <div className="flex flex-col">
         <span className="text-[10px] font-black text-zinc-400 uppercase tracking-widest">Alamat Whitelist</span>
         <span className="text-xs font-mono font-medium text-zinc-800 dark:text-zinc-200">
-          {/* Memotong alamat agar tidak terlalu panjang di layar PC/HP */}
           {`${address.slice(0, 10)}...${address.slice(-8)}`}
         </span>
       </div>
@@ -47,19 +48,21 @@ function VoterStatus({ address, pollId }: { address: string; pollId: bigint }) {
  * Komponen Utama Tab Verifikasi
  */
 export function Verification({ whitelist }: { whitelist: string[] }) {
-  // 1. Ambil ID Pemilihan yang sedang aktif dari Blockchain
-  const { data: currentPollId } = useReadContract({
+  const { data: currentPollId, refetch: refetchId } = useReadContract({
     abi: CLASS_VOTE_ABI,
-    address: CONTRACT_ADDRESS,
+    address: CONTRACT_ADDRESS as `0x${string}`,
     functionName: "pollId",
   });
 
-  // Pastikan pollId tersedia sebagai bigint (default ke 0 jika belum termuat)
+  // Jalankan refetch saat komponen pertama kali muncul
+  useEffect(() => {
+    if (refetchId) refetchId();
+  }, [refetchId]);
+
   const activePollId = typeof currentPollId === 'bigint' ? currentPollId : BigInt(0);
 
   return (
     <div className="p-6 pb-24 max-w-lg mx-auto animate-in fade-in slide-in-from-bottom-4 duration-700">
-      {/* Header Tab */}
       <div className="flex flex-col items-center mb-8">
         <div className="w-12 h-12 bg-teal-50 dark:bg-teal-900/30 rounded-2xl flex items-center justify-center mb-3">
           <PlaylistAddCheck className="text-teal-600" fontSize="medium" />
@@ -72,7 +75,6 @@ export function Verification({ whitelist }: { whitelist: string[] }) {
         </p>
       </div>
 
-      {/* Daftar Status Murid */}
       {whitelist.length === 0 ? (
         <div className="text-center p-12 bg-zinc-50 dark:bg-zinc-900/50 rounded-[32px] border-2 border-dashed border-zinc-200 dark:border-zinc-800">
           <p className="text-zinc-400 text-xs font-bold uppercase tracking-widest">
@@ -91,7 +93,6 @@ export function Verification({ whitelist }: { whitelist: string[] }) {
         </div>
       )}
 
-      {/* Footer Info */}
       <div className="mt-8 pt-6 border-t border-zinc-100 dark:border-zinc-800 text-center">
         <p className="text-[9px] font-black text-zinc-300 uppercase tracking-[0.3em]">
           Data Transparan Blockchain Base
