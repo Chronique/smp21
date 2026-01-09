@@ -1,14 +1,12 @@
-// src/components/CreatePoll.tsx
 "use client";
 
 import { useState } from "react";
 import { useSendCalls } from "wagmi";
-import { encodeFunctionData } from "viem";
+import { encodeFunctionData, concat } from "viem"; // Tambahkan concat
 import { CONTRACT_ADDRESS, CLASS_VOTE_ABI, BUILDER_CODE_HEX } from "~/app/constants";
-import { Add, DeleteOutline, AddPhotoAlternate } from "@mui/icons-material"; // Ikon M3
+import { Add, DeleteOutline, AddPhotoAlternate } from "@mui/icons-material";
 
 export default function CreatePoll({ onSuccess }: { onSuccess?: () => void }) {
-  // State sekarang menyimpan objek dengan name dan photo
   const [candidateList, setCandidateList] = useState([
     { name: "", photo: "" }, 
     { name: "", photo: "" }
@@ -19,27 +17,33 @@ export default function CreatePoll({ onSuccess }: { onSuccess?: () => void }) {
     const paymasterUrl = process.env.NEXT_PUBLIC_PAYMASTER_URL;
     if (!paymasterUrl) return alert("Paymaster URL tidak ditemukan!");
 
-    // Ambil data dari state
     const names = candidateList.map(c => c.name).filter(n => n !== "");
-    const photos = candidateList.map(c => c.photo || "https://via.placeholder.com/150"); // Default jika kosong
+    const photos = candidateList.map(c => c.photo || "https://via.placeholder.com/150");
     
     if (names.length < 2) return alert("Minimal 2 nama kandidat harus diisi!");
 
     try {
+      // Encode data asli
+      const baseData = encodeFunctionData({
+        abi: CLASS_VOTE_ABI,
+        functionName: "createPoll",
+        args: [names, photos],
+      });
+
+      // Gabungkan dengan Builder Code menggunakan concat
+      const finalData = concat([baseData, BUILDER_CODE_HEX as `0x${string}`]);
+
       sendCalls({
         calls: [{
           to: CONTRACT_ADDRESS as `0x${string}`,
-          data: `${encodeFunctionData({
-            abi: CLASS_VOTE_ABI,
-            functionName: "createPoll",
-            args: [names, photos],
-          })}${BUILDER_CODE_HEX}` as `0x${string}`, // Builder Code
+          data: finalData,
         }],
         capabilities: { paymasterService: { url: paymasterUrl } }
       });
       alert("Pemilihan sedang diproses secara Gasless!");
       if (onSuccess) onSuccess();
     } catch (e) { 
+      console.error(e);
       alert("Gagal memublikasikan pemilihan."); 
     }
   };
@@ -60,7 +64,6 @@ export default function CreatePoll({ onSuccess }: { onSuccess?: () => void }) {
               )}
             </div>
 
-            {/* Input Nama */}
             <input 
               placeholder="Nama Lengkap" 
               className="w-full bg-transparent border-b border-zinc-200 py-2 text-sm outline-none focus:border-blue-500 transition-colors"
@@ -70,7 +73,6 @@ export default function CreatePoll({ onSuccess }: { onSuccess?: () => void }) {
               }}
             />
 
-            {/* Input Foto (Baru ditambahkan) */}
             <div className="flex items-center gap-2">
               <AddPhotoAlternate className="text-zinc-400" fontSize="small" />
               <input 
@@ -89,7 +91,7 @@ export default function CreatePoll({ onSuccess }: { onSuccess?: () => void }) {
       {candidateList.length < 5 && (
         <button 
           onClick={() => setCandidateList([...candidateList, { name: "", photo: "" }])} 
-          className="w-full py-3 border-2 border-dashed border-zinc-200 rounded-2xl flex items-center justify-center gap-2 text-zinc-400 hover:text-blue-500 transition-colors"
+          className="w-full py-3 border-2 border-dashed border-zinc-200 rounded-2xl flex items-center justify-center gap-2 text-zinc-400 hover:text-blue-500 transition-colors active:scale-95"
         >
           <Add fontSize="small" /> <span className="text-xs font-bold">Tambah Kandidat</span>
         </button>
