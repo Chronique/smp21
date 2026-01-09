@@ -27,18 +27,18 @@ export const CLASS_VOTE_ABI =
   },
 
   {
-    "name": "getFullWhitelist",
-    "type": "function",
-    "inputs": [],
-    "outputs": [{ "name": "", "type": "address[]", "internalType": "address[]" }],
-    "stateMutability": "view"
+  "name": "getFullWhitelist",
+  "type": "function",
+  "inputs": [],
+  "outputs": [{ "type": "address[]" }],
+  "stateMutability": "view"
   },
   {
-    "name": "getFullAdmins",
-    "type": "function",
-    "inputs": [],
-    "outputs": [{ "name": "", "type": "address[]", "internalType": "address[]" }],
-    "stateMutability": "view"
+  "name": "getFullAdmins",
+  "type": "function",
+  "inputs": [],
+  "outputs": [{ "type": "address[]" }],
+  "stateMutability": "view"
   },
 
   {
