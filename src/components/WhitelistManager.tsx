@@ -2,8 +2,10 @@
 
 import { useState } from "react";
 import { useSendCalls } from "wagmi";
-import { encodeFunctionData } from "viem";
-import { CONTRACT_ADDRESS, CLASS_VOTE_ABI } from "~/app/constants";
+// Import concat untuk menggabungkan data transaksi dengan Builder Code
+import { encodeFunctionData, concat } from "viem"; 
+// Import BUILDER_CODE_HEX dari constants
+import { CONTRACT_ADDRESS, CLASS_VOTE_ABI, BUILDER_CODE_HEX } from "~/app/constants";
 import { Button } from "./ui/Button";
 
 export default function WhitelistManager() {
@@ -12,11 +14,9 @@ export default function WhitelistManager() {
 
   // 1. Fungsi Tambah Whitelist (Gasless)
   const handleAdd = async () => {
-    // FIX: Ambil URL dan pastikan tidak undefined
     const paymasterUrl = process.env.NEXT_PUBLIC_PAYMASTER_URL;
     if (!paymasterUrl) return alert("Paymaster URL belum diatur di .env");
 
-    // FIX: Casting ke `0x${string}`[] agar TypeScript tidak komplain
     const addresses = input
       .split(/[\n,]+/)
       .map((a) => a.trim())
@@ -25,15 +25,21 @@ export default function WhitelistManager() {
     if (addresses.length === 0) return alert("Alamat tidak valid!");
 
     try {
+      // Encode data fungsi asli
+      const baseData = encodeFunctionData({
+        abi: CLASS_VOTE_ABI,
+        functionName: "addToWhitelist",
+        args: [addresses],
+      });
+
+      // Gabungkan dengan Builder Code menggunakan concat (Attribution)
+      const finalData = concat([baseData, BUILDER_CODE_HEX as `0x${string}`]);
+
       sendCalls({
         calls: [
           {
             to: CONTRACT_ADDRESS as `0x${string}`,
-            data: encodeFunctionData({
-              abi: CLASS_VOTE_ABI,
-              functionName: "addToWhitelist",
-              args: [addresses],
-            }),
+            data: finalData,
           },
         ],
         capabilities: {
@@ -43,6 +49,7 @@ export default function WhitelistManager() {
       alert("Permintaan pendaftaran dikirim secara gratis!");
       setInput("");
     } catch (e) {
+      console.error(e);
       alert("Terjadi kesalahan teknis.");
     }
   };
@@ -59,15 +66,21 @@ export default function WhitelistManager() {
     if (!confirm(confirmMsg)) return;
 
     try {
+      // Encode data fungsi asli
+      const baseData = encodeFunctionData({
+        abi: CLASS_VOTE_ABI,
+        functionName: "resetPoll",
+        args: [hapusSemuaMurid],
+      });
+
+      // Gabungkan dengan Builder Code menggunakan concat (Attribution)
+      const finalData = concat([baseData, BUILDER_CODE_HEX as `0x${string}`]);
+
       sendCalls({
         calls: [
           {
             to: CONTRACT_ADDRESS as `0x${string}`,
-            data: encodeFunctionData({
-              abi: CLASS_VOTE_ABI,
-              functionName: "resetPoll",
-              args: [hapusSemuaMurid],
-            }),
+            data: finalData,
           },
         ],
         capabilities: {
@@ -76,6 +89,7 @@ export default function WhitelistManager() {
       });
       alert("Permintaan reset dikirim secara gratis!");
     } catch (e) {
+      console.error(e);
       alert("Gagal melakukan reset.");
     }
   };
