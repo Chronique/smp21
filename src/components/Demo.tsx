@@ -47,9 +47,9 @@ export default function Demo() {
         ) : (
           <>
             {activeTab === "vote" && (
-              pollCreated ? <VoteCard /> : 
+               pollCreated ? <VoteCard isAdmin={isAdmin} /> : 
               <div className="text-center p-12 bg-white dark:bg-zinc-900 rounded-3xl border border-dashed text-gray-400">
-                <p className="font-bold">Belum ada pemilihan aktif.</p>
+              <p className="font-bold">Belum ada pemilihan aktif.</p>
               </div>
             )}
             
