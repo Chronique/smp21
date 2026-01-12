@@ -1,6 +1,8 @@
 # 🗳️ ClassVote & SMP21 On-Chain Voting
 
 
+![Repo Size](https://img.shields.io/github/repo-size/Chronique/smp21?color=blue) ![License](https://img.shields.io/github/license/Chronique/smp21?color=green) [![Follow on X](https://img.shields.io/twitter/follow/adhichronique?style=social)](https://x.com/adhichronique)
+
 ![Application Screenshot](./assets/Screenshot%202026-01-06%20000512.png)
 
 A decentralized, transparent, and user-friendly voting ecosystem built on the Base network. This project is designed to digitize school elections (such as Class President or Student Council) using blockchain technology to ensure every vote is tamper-proof and verifiable.
