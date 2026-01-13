@@ -20,7 +20,7 @@ export async function GET() {
         "ogTitle": METADATA.name,
         "ogDescription": METADATA.description,
         "ogImageUrl": METADATA.bannerImageUrl,
-        "primaryCategory": "developer-tools",
+        "primaryCategory": "voting",
         "requiredCapabilities": [
           "actions.ready",
           "actions.signIn", 
